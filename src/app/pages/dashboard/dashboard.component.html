@@ -1,0 +1,201 @@
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="logo">⚖️ QuantiMeasure</div>
+
+    <nav class="nav">
+      <button class="nav-item" [class.active]="activeTab === 'calculator'" (click)="switchTab('calculator')">
+        🧮 Calculator
+      </button>
+      <button class="nav-item" [class.active]="activeTab === 'history'" (click)="switchTab('history')">
+        📋 History
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-badge">
+        <div class="avatar">{{ user?.name?.charAt(0)?.toUpperCase() }}</div>
+        <div class="user-info">
+          <span class="user-name">{{ user?.name }}</span>
+          <span class="user-email">{{ user?.email }}</span>
+        </div>
+      </div>
+      <button class="logout-btn" (click)="logout()">↩ Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ── CALCULATOR TAB ── -->
+    <div *ngIf="activeTab === 'calculator'" class="content-area">
+      <div class="page-header">
+        <h2>Quantity Calculator</h2>
+        <p>Select an operation, enter values, and compute instantly</p>
+      </div>
+
+      <!-- Operation selector -->
+      <div class="op-grid">
+        <button
+          *ngFor="let op of operations"
+          class="op-btn"
+          [class.active]="operation === op.key"
+          (click)="operation = op.key; result = null; errorMsg = ''">
+          <span class="op-icon">{{ op.icon }}</span>
+          <span>{{ op.label }}</span>
+        </button>
+      </div>
+
+      <div class="calc-card">
+
+        <!-- First quantity -->
+        <div class="section-title">
+          {{ operation === 'convert' ? 'Source Quantity' : 'First Quantity' }}
+        </div>
+        <div class="qty-row">
+          <div class="field">
+            <label>Value</label>
+            <input type="number" [(ngModel)]="firstValue" />
+          </div>
+          <div class="field">
+            <label>Type</label>
+            <select [(ngModel)]="firstType" (change)="onTypeChange('first')">
+              <option *ngFor="let g of unitGroups" [value]="g.type">{{ g.type }}</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Unit</label>
+            <select [(ngModel)]="firstUnit">
+              <option *ngFor="let u of firstUnits" [value]="u">{{ u }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Second quantity (binary ops) -->
+        <ng-container *ngIf="isBinaryOp()">
+          <div class="section-title">Second Quantity</div>
+          <div class="qty-row">
+            <div class="field">
+              <label>Value</label>
+              <input type="number" [(ngModel)]="secondValue" />
+            </div>
+            <div class="field">
+              <label>Type</label>
+              <select [(ngModel)]="secondType" (change)="onTypeChange('second')">
+                <option *ngFor="let g of unitGroups" [value]="g.type">{{ g.type }}</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Unit</label>
+              <select [(ngModel)]="secondUnit">
+                <option *ngFor="let u of secondUnits" [value]="u">{{ u }}</option>
+              </select>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Target unit (convert + arithmetic) -->
+        <ng-container *ngIf="operation !== 'compare'">
+          <div class="section-title">{{ operation === 'convert' ? 'Target Unit' : 'Result Unit' }}</div>
+          <div class="qty-row">
+            <div class="field">
+              <label>Unit</label>
+              <select [(ngModel)]="targetUnit">
+                <option *ngFor="let u of targetUnits" [value]="u">{{ u }}</option>
+              </select>
+            </div>
+          </div>
+        </ng-container>
+
+        <!-- Error -->
+        <div class="error-bar" *ngIf="errorMsg">⚠️ {{ errorMsg }}</div>
+
+        <!-- Submit -->
+        <button class="btn-primary" [disabled]="loading" (click)="onSubmit()">
+          {{ loading ? 'Computing…' : '▶ Compute' }}
+        </button>
+
+        <!-- Result -->
+        <div class="result-card" *ngIf="result">
+          <div class="result-header">
+            <span class="result-badge" [class.success]="result.successful" [class.fail]="!result.successful">
+              {{ result.successful ? '✅ Success' : '❌ Failed' }}
+            </span>
+            <span class="op-label">{{ result.operationType }}</span>
+          </div>
+
+          <!-- Comparison -->
+          <div *ngIf="result.comparisonResult !== undefined && result.comparisonResult !== null" class="result-big">
+            <span class="cmp-badge" [class.equal]="result.comparisonResult">
+              {{ result.comparisonResult ? '= Equal' : '≠ Not Equal' }}
+            </span>
+          </div>
+
+          <!-- Numeric result -->
+          <div *ngIf="result.resultQuantity" class="result-big">
+            <span class="result-value">{{ result.resultQuantity.value | number:'1.0-6' }}</span>
+            <span class="result-unit">{{ result.resultQuantity.unitName }}</span>
+          </div>
+
+          <div *ngIf="result.errorMessage" class="error-note">{{ result.errorMessage }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── HISTORY TAB ── -->
+    <div *ngIf="activeTab === 'history'" class="content-area">
+      <div class="page-header">
+        <h2>Operation History</h2>
+        <p>All past quantity operations</p>
+        <button class="btn-refresh" (click)="loadHistory()">🔄 Refresh</button>
+      </div>
+
+      <div *ngIf="historyLoading" class="loading-state">Loading history…</div>
+
+      <div *ngIf="!historyLoading && history.length === 0" class="empty-state">
+        No operations yet. Head to the Calculator tab to get started!
+      </div>
+
+      <div class="history-table-wrap" *ngIf="!historyLoading && history.length > 0">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Operation</th>
+              <th>First</th>
+              <th>Second</th>
+              <th>Result</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of history">
+              <td>{{ h.id }}</td>
+              <td><span class="op-tag">{{ h.operationType }}</span></td>
+              <td>{{ h.firstOperandValue }} {{ h.firstUnit }}</td>
+              <td>{{ h.secondOperandValue !== null ? (h.secondOperandValue + ' ' + h.secondUnit) : '—' }}</td>
+              <td>
+                <span *ngIf="h.comparisonResult !== null && h.comparisonResult !== undefined">
+                  {{ h.comparisonResult ? 'Equal' : 'Not Equal' }}
+                </span>
+                <span *ngIf="h.resultOperandValue !== null && h.resultOperandValue !== undefined">
+                  {{ h.resultOperandValue | number:'1.0-4' }} {{ h.resultUnit }}
+                </span>
+              </td>
+              <td>
+                <span class="status-badge" [class.ok]="h.successful" [class.fail]="!h.successful">
+                  {{ h.successful ? 'OK' : 'Failed' }}
+                </span>
+              </td>
+              <td class="date-col">{{ h.createdAt | date:'short' }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>

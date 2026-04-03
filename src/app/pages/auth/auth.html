@@ -1,0 +1,37 @@
+<div class="container">
+
+  <div class="left-panel">
+    <img src="shooping.png" alt="img">
+    <h2>QUANTITY MEASUREMENT</h2>
+  </div>
+
+  <div class="right-panel">
+
+    <div class="tabs">
+      <span (click)="isLogin = true" [class.active]="isLogin">LOGIN</span>
+      <span (click)="isLogin = false" [class.active]="!isLogin">SIGNUP</span>
+    </div>
+
+    <!-- LOGIN -->
+    <div *ngIf="isLogin">
+      <input type="email" placeholder="Email" [(ngModel)]="loginData.email">
+      <input type="password" placeholder="Password" [(ngModel)]="loginData.password">
+      <button (click)="onLogin()">Login</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div *ngIf="!isLogin">
+      <input type="text" placeholder="Full Name" [(ngModel)]="signupData.fullName">
+      <input type="email" placeholder="Email Id" [(ngModel)]="signupData.email">
+      <input type="password" placeholder="Password" [(ngModel)]="signupData.password">
+      <input type="text" placeholder="Mobile Number" [(ngModel)]="signupData.mobile">
+      <button (click)="onSignup()">Signup</button>
+    </div>
+
+    <div class="google-btn">
+      <div id="google-btn"></div>
+    </div>
+
+  </div>
+
+</div>
