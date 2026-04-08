@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface QuantityDTO {
   value: number;
@@ -34,7 +35,7 @@ export interface HistoryEntry {
 
 @Injectable({ providedIn: 'root' })
 export class QuantityService {
-  private baseUrl = 'http://localhost:8080/api/quantity';
+  private baseUrl = `${environment.apiUrl}/quantity`;
 
   constructor(private http: HttpClient) {}
 

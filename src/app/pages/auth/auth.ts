@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth';
+import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 declare const google: any;
 
@@ -17,7 +18,7 @@ export class AuthComponent implements OnInit {
   isLogin = true;
 
   signupData = {
-    fullName: '',
+    name: '',
     email: '',
     password: '',
     mobile: ''
