@@ -1,4 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://quantitymeasurementapp-production-0da1.up.railway.app/api'
+  apiUrl: 'https://apigateway-jl2d.onrender.com',
+  authUrl: 'https://authenticationservice-h3hj.onrender.com',
+  quantityUrl: ''
 };

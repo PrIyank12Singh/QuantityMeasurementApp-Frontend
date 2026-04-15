@@ -11,7 +11,7 @@ export interface AuthResponse {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private baseUrl = `${environment.apiUrl}/auth`;
+  private baseUrl = environment.authUrl;
 
   constructor(private http: HttpClient) {}
 

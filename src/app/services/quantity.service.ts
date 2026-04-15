@@ -35,7 +35,7 @@ export interface HistoryEntry {
 
 @Injectable({ providedIn: 'root' })
 export class QuantityService {
-  private baseUrl = `${environment.apiUrl}/quantity`;
+  private baseUrl = environment.quantityUrl;
 
   constructor(private http: HttpClient) {}
 

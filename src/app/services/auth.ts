@@ -6,7 +6,7 @@ import { HttpClient } from '@angular/common/http';
 })
 export class AuthService {
 
-  private baseUrl = 'http://localhost:8080/api/auth';
+  private baseUrl = 'https://<YOUR_RENDER_API_GATEWAY_URL>/api/auth';
 
   constructor(private http: HttpClient) {}
 
@@ -18,7 +18,7 @@ export class AuthService {
     return this.http.post(`${this.baseUrl}/login`, data);
   }
 
-  googleLogin(token: string) {
-    return this.http.post(`${this.baseUrl}/google`, { token });
+  googleLogin(idToken: string) {
+    return this.http.post(`${this.baseUrl}/google`, { idToken });
   }
 }
