@@ -29,6 +29,8 @@ export class AuthComponent implements OnInit {
     password: ''
   };
 
+  isLoading = false;
+
   constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
@@ -38,12 +40,17 @@ export class AuthComponent implements OnInit {
       callback: (response: any) => {
         const token = response.credential;
 
+        this.isLoading = true;
         this.authService.googleLogin(token).subscribe({
           next: (res: any) => {
             localStorage.setItem('token', res.token); // ✅ Store Google token
             alert('Google login success');
+            this.isLoading = false;
           },
-          error: () => alert('Google login failed')
+          error: () => {
+            this.isLoading = false;
+            alert('Google login failed');
+          }
         });
       }
     });
@@ -56,23 +63,45 @@ export class AuthComponent implements OnInit {
 
   // Normal Signup
   onSignup() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
     this.authService.signup(this.signupData).subscribe({
       next: () => {
         alert('Signup success');
+        this.isLoading = false;
         this.isLogin = true;
       },
-      error: () => alert('Signup failed')
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 429) {
+          alert('Too many requests. Please wait a moment.');
+        } else {
+          alert('Signup failed');
+        }
+      }
     });
   }
 
   // Normal Login
   onLogin() {
+    if (this.isLoading) return;
+    this.isLoading = true;
+
     this.authService.login(this.loginData).subscribe({
       next: (res: any) => {
+        this.isLoading = false;
         localStorage.setItem('token', res.token); // ✅ Store login token
         alert('Login success');
       },
-      error: () => alert('Login failed')
+      error: (err) => {
+        this.isLoading = false;
+        if (err.status === 429) {
+          alert('Too many requests. Please wait a moment.');
+        } else {
+          alert('Login failed');
+        }
+      }
     });
   }
 
