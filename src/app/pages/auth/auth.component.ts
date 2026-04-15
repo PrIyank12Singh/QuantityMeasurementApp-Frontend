@@ -19,24 +19,37 @@ export class AuthComponent implements OnInit {
   loading = false;
   errorMsg = '';
 
-  loginData = { email: '', password: '' };
+  loginData = {
+    email: '',
+    password: ''
+  };
 
-  signupData = { name: '', email: '', password: '', confirmPassword: '', mobile: '' };
+  signupData = {
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    mobile: ''
+  };
 
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     if (this.authService.isLoggedIn()) {
       this.router.navigate(['/dashboard']);
       return;
     }
-    // Check for Google OAuth redirect
+
     const hash = window.location.hash;
     if (hash.startsWith('#credential=')) {
       const credential = hash.substring('#credential='.length);
       this.handleGoogleCallback({ credential });
       return;
     }
+
     this.initGoogle();
   }
 
@@ -56,10 +69,16 @@ export class AuthComponent implements OnInit {
   }
 
   private handleGoogleCallback(response: any): void {
+    if (this.loading) return;
+
     this.loading = true;
     this.errorMsg = '';
+
     this.authService.googleLogin(response.credential).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.errorMsg = err.error?.message || 'Google login failed';
         this.loading = false;
@@ -68,14 +87,21 @@ export class AuthComponent implements OnInit {
   }
 
   onLogin(): void {
+    if (this.loading) return;
+
     if (!this.loginData.email || !this.loginData.password) {
       this.errorMsg = 'Please fill in all fields';
       return;
     }
+
     this.loading = true;
     this.errorMsg = '';
+
     this.authService.login(this.loginData).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.errorMsg = err.error?.message || 'Invalid credentials';
         this.loading = false;
@@ -84,22 +110,36 @@ export class AuthComponent implements OnInit {
   }
 
   onSignup(): void {
+    if (this.loading) return;
+
     if (!this.signupData.name || !this.signupData.email || !this.signupData.password) {
       this.errorMsg = 'Please fill in all required fields';
       return;
     }
+
     if (this.signupData.password !== this.signupData.confirmPassword) {
       this.errorMsg = 'Passwords do not match';
       return;
     }
+
     if (this.signupData.password.length < 6) {
       this.errorMsg = 'Password must be at least 6 characters';
       return;
     }
+
     this.loading = true;
     this.errorMsg = '';
-    this.authService.signup(this.signupData).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+
+    this.authService.signup({
+      name: this.signupData.name,
+      email: this.signupData.email,
+      password: this.signupData.password,
+      mobile: this.signupData.mobile
+    }).subscribe({
+      next: () => {
+        this.loading = false;
+        this.router.navigate(['/dashboard']);
+      },
       error: (err) => {
         this.errorMsg = err.error?.message || 'Signup failed';
         this.loading = false;
@@ -108,6 +148,8 @@ export class AuthComponent implements OnInit {
   }
 
   toggleForm(): void {
+    if (this.loading) return;
+
     this.isLogin = !this.isLogin;
     this.errorMsg = '';
     this.loading = false;

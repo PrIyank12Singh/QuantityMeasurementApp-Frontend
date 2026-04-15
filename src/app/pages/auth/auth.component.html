@@ -1,13 +1,13 @@
 <div class="auth-wrapper">
   <div class="auth-card">
 
-    <!-- Left panel -->
     <div class="auth-left">
       <div class="brand">
         <div class="brand-icon">⚖️</div>
         <h1>QuantiMeasure</h1>
         <p>Convert, compare, and compute physical quantities with precision.</p>
       </div>
+
       <ul class="features">
         <li>📐 Length · Weight · Volume · Temperature</li>
         <li>🔄 Smart unit conversion</li>
@@ -16,71 +16,111 @@
       </ul>
     </div>
 
-    <!-- Right panel -->
     <div class="auth-right">
-      <!-- Tabs -->
       <div class="tabs">
-        <button [class.active]="isLogin" (click)="isLogin = true; errorMsg = ''">Login</button>
-        <button [class.active]="!isLogin" (click)="isLogin = false; errorMsg = ''">Sign Up</button>
+        <button type="button" [class.active]="isLogin" (click)="isLogin = true; errorMsg = ''">Login</button>
+        <button type="button" [class.active]="!isLogin" (click)="isLogin = false; errorMsg = ''">Sign Up</button>
       </div>
 
-      <!-- Error message -->
       <div class="error-bar" *ngIf="errorMsg">{{ errorMsg }}</div>
 
-      <!-- LOGIN -->
       <form *ngIf="isLogin" (ngSubmit)="onLogin()" class="auth-form">
         <div class="field">
           <label>Email</label>
-          <input type="email" placeholder="you@example.com" [(ngModel)]="loginData.email" name="email" required />
+          <input
+            type="email"
+            placeholder="you@example.com"
+            [(ngModel)]="loginData.email"
+            name="loginEmail"
+            required
+          />
         </div>
+
         <div class="field">
           <label>Password</label>
-          <input type="password" placeholder="••••••••" [(ngModel)]="loginData.password" name="password" required />
+          <input
+            type="password"
+            placeholder="••••••••"
+            [(ngModel)]="loginData.password"
+            name="loginPassword"
+            required
+          />
         </div>
+
         <button type="submit" class="btn-primary" [disabled]="loading">
           {{ loading ? 'Logging in…' : 'Login' }}
         </button>
       </form>
 
-      <!-- SIGNUP -->
       <form *ngIf="!isLogin" (ngSubmit)="onSignup()" class="auth-form">
         <div class="field">
           <label>Full Name <span class="required">*</span></label>
-          <input type="text" placeholder="John Doe" [(ngModel)]="signupData.name" name="name" required />
+          <input
+            type="text"
+            placeholder="John Doe"
+            [(ngModel)]="signupData.name"
+            name="signupName"
+            required
+          />
         </div>
+
         <div class="field">
           <label>Email <span class="required">*</span></label>
-          <input type="email" placeholder="you@example.com" [(ngModel)]="signupData.email" name="email" required />
+          <input
+            type="email"
+            placeholder="you@example.com"
+            [(ngModel)]="signupData.email"
+            name="signupEmail"
+            required
+          />
         </div>
+
         <div class="field">
           <label>Password <span class="required">*</span></label>
-          <input type="password" placeholder="Min 6 characters" [(ngModel)]="signupData.password" name="password" required />
+          <input
+            type="password"
+            placeholder="Min 6 characters"
+            [(ngModel)]="signupData.password"
+            name="signupPassword"
+            required
+          />
         </div>
+
         <div class="field">
           <label>Confirm Password <span class="required">*</span></label>
-          <input type="password" placeholder="Repeat password" [(ngModel)]="signupData.confirmPassword" name="confirmPassword" required />
+          <input
+            type="password"
+            placeholder="Repeat password"
+            [(ngModel)]="signupData.confirmPassword"
+            name="signupConfirmPassword"
+            required
+          />
         </div>
+
         <div class="field">
           <label>Mobile <span class="optional">(optional)</span></label>
-          <input type="tel" placeholder="+91 98765 43210" [(ngModel)]="signupData.mobile" name="mobile" />
+          <input
+            type="tel"
+            placeholder="+91 98765 43210"
+            [(ngModel)]="signupData.mobile"
+            name="signupMobile"
+          />
         </div>
+
         <button type="submit" class="btn-primary" [disabled]="loading">
           {{ loading ? 'Creating account…' : 'Create Account' }}
         </button>
       </form>
 
-      <!-- Divider -->
       <div class="divider"><span>or</span></div>
 
-      <!-- Google Login -->
       <div class="google-wrap">
         <div id="google-btn"></div>
       </div>
 
-      <!-- Toggle -->
       <p class="toggle-text">
         {{ isLogin ? "Don't have an account?" : 'Already have an account?' }}
-        <button class="link-btn" (click)="toggleForm()">
+        <button type="button" class="link-btn" (click)="toggleForm()">
           {{ isLogin ? 'Sign Up' : 'Login' }}
         </button>
       </p>
