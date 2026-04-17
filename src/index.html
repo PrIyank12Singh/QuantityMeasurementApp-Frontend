@@ -8,7 +8,15 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <!-- Google Identity Services (for Google Sign-In button) -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script>
+  // Ping backend every 10 minutes to prevent sleeping
+  setInterval(() => {
+    fetch('https://apigateway-jl2d.onrender.com/actuator/health')
+      .catch(() => {});
+  }, 600000);
+</script>
 </head>
+
 <body>
   <app-root></app-root>
 </body>
