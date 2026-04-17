@@ -43,6 +43,13 @@ export class AuthComponent implements OnInit {
       return;
     }
 
+    const hash = window.location.hash;
+    if (hash.startsWith('#credential=')) {
+      const credential = hash.substring('#credential='.length);
+      this.handleGoogleCallback({ credential });
+      return;
+    }
+
     this.initGoogle();
   }
 
@@ -51,10 +58,8 @@ export class AuthComponent implements OnInit {
 
     google.accounts.id.initialize({
       client_id: '481397534301-3r9dl62f6m2ij565i79463d5276ig2oh.apps.googleusercontent.com',
-      ux_mode: 'popup',
-      callback: (response: any) => {           // ← add callback instead of login_uri
-      this.handleGoogleCallback(response);
-      }
+      ux_mode: 'redirect',
+      login_uri: window.location.origin + '/auth'
     });
 
     google.accounts.id.renderButton(
